@@ -2,6 +2,9 @@ import Head from 'next/head'
 import Layout, {siteTitle} from "../components/layout"
 import utilStyles from '../styles/utils.module.css'
 import {getSortedPostsData} from "../lib/posts"
+import useSWR from 'swr'
+import Link from 'next/link'
+import Date from '../components/date'
 
 //If you set function getStaticProps which returns props then you can use it later in Home function
 //https://nextjs.org/learn/basics/data-fetching/implement-getstaticprops
@@ -17,19 +20,19 @@ export async function getStaticProps() {
 
 //For getting context from the request you need to use this instea of getStaticProps
 //https://nextjs.org/learn/basics/data-fetching/request-time
-export async function getServerSideProps(context) {
-    return {
-        props: {
-            // props for your component
-        }
-    }
-}
+// export async function getServerSideProps(context) {
+//     return {
+//         props: {
+//             // props for your component
+//         }
+//     }
+// }
 
 //Есть ещё метод Client-Side rendering, когда сначала подгружается страница, у пользователя считываются данные
 //и затем, используя эти данные, считываются данные с сервера именно для этого пользователя
 //Хорошо подходит для Дашбордов как раз
 //https://nextjs.org/learn/basics/data-fetching/request-time
-import useSWR from 'swr'
+
 function Profile() {
     const { data, error } = useSWR('/api/user', fetch)
 
@@ -59,13 +62,15 @@ export default function Home({allPostsData}) {
             <ul className={utilStyles.list}>
                 {allPostsData.map(({id, date, title}) => (
                     <li className={utilStyles.listItem} key={id}>
-                        {title}
-                        <br/>
-                        {id}
-                        <br/>
-                        {date}
+                        <Link href={`/posts/${id}`}>
+                            <a>{title}</a>
+                        </Link>
+                        <br />
+                        <small className={utilStyles.lightText}>
+                            <Date dateString={date} />
+                        </small>
                     </li>
-                    )
+                  )
                 )}
             </ul>
         </section>
